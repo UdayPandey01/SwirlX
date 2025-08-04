@@ -17,17 +17,11 @@ export const SwirlXNavbar = () => {
         <Image
           src="/logo.png"
           alt="SwirlX Logo"
-          width={40}
-          height={40}
+          width={70}
+          height={50}
           className="rounded-full cursor-pointer hover:scale-105 transition-transform"
           onClick={() => router.push("/")}
         />
-        <div
-          onClick={() => router.push("/")}
-          className="text-xl font-bold text-white cursor-pointer hover:scale-105 transition-transform"
-        >
-          SwirlX
-        </div>
         </div>
         <div className="flex gap-6 items-center text-sm font-medium">
           <span

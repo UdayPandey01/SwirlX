@@ -7,7 +7,6 @@ const LandingPage = () => {
   const [showContent, setShowContent] = useState(false);
 
   useEffect(() => {
-    // Wait for Spline animation to finish (adjust delay as needed)
     const timer = setTimeout(() => setShowContent(true), 1200);
     return () => clearTimeout(timer);
   }, []);
@@ -15,9 +14,7 @@ const LandingPage = () => {
   return (
     <div className="h-screen bg-black relative overflow-hidden">
       <div className="flex h-full">
-        {/* Left Side - Content */}
         <div className="flex-1 flex flex-col justify-center items-start px-8 lg:px-16 xl:px-20 max-w-2xl">
-          {/* Headline */}
           <motion.h1
             initial={{ opacity: 0, y: 50 }}
             animate={showContent ? { opacity: 1, y: 0 } : {}}
@@ -29,7 +26,6 @@ const LandingPage = () => {
             <span className="text-gray-400">Fast. Secure. Limitless.</span>
           </motion.h1>
 
-          {/* Subheadline */}
           <motion.p
             initial={{ opacity: 0 }}
             animate={showContent ? { opacity: 1 } : {}}
@@ -42,7 +38,6 @@ const LandingPage = () => {
             <span className="text-white font-semibold">Arbitrum</span>, and more.
           </motion.p>
 
-          {/* Buttons */}
           <div className="flex flex-col sm:flex-row gap-4">
             <motion.button
               initial={{ opacity: 0, y: 20 }}
@@ -66,8 +61,6 @@ const LandingPage = () => {
             </motion.button>
           </div>
         </div>
-
-        {/* Right Side - Spline */}
         <div className="flex-1 relative h-full">
           <motion.div
             initial={{ opacity: 0, x: 100 }}
@@ -80,8 +73,11 @@ const LandingPage = () => {
         </div>
       </div>
 
-      {/* Background Gradient */}
       <div className="absolute inset-0 bg-gradient-to-br from-blue-900/10 via-transparent to-purple-900/10 pointer-events-none" />
+      {/* Soft fade into black at bottom */}
+<div className="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-b from-transparent via-black to-black pointer-events-none z-10" />
+
+
     </div>
   );
 };
