@@ -4,7 +4,7 @@ dotenv.config();
 
 // ✅ Load environment variables
 const ETHEREUM_RPC = "https://eth-sepolia.g.alchemy.com/v2/PCLr1MFnA4ma6nhEMz3Od";
-const PRIVATE_KEY = "0x145c4e212eb16f29509a796f79fbd864083f45dd70b55d5a1e31385a668e4054";
+const PRIVATE_KEY = process.env.PRIVATE_KEY!;
 const BRIDGE_CONTRACT = "0xfFBD6b0ac5e12827122B12B43F233f4490034111"; // Ethereum Sepolia bridge
 const ERC20_TOKEN_ADDRESS = "0x011053718683C5968AC4B0Ce04589a46A6E244F3"; // 👈 Replace this with your token address
 
@@ -28,8 +28,8 @@ async function main() {
   const token = new ethers.Contract(ERC20_TOKEN_ADDRESS, erc20Abi, wallet);
 
   // ✅ Params
-  const receiverOnBase = "0x1445E10B5D32d9F7dd1cd44C856ad4d896Bf6D81"; // 👈 Replace with actual receiver address
-  const amount = ethers.parseUnits("0.0001", 18); // Sending 0.1 token (adjust decimals as per token)
+  const receiverOnBase = "0x048830aA6b8EBbf29C493d1328c0266E74E08891"; // 👈 Replace with actual receiver address
+  const amount = ethers.parseUnits("0.0000001", 18); // Sending 0.1 token (adjust decimals as per token)
   const destinationChain = "Base";
 
   // ✅ Check balance
@@ -50,11 +50,14 @@ async function main() {
 
   // ✅ Call lock
   console.log(`Locking ${ethers.formatUnits(amount, 18)} tokens for ${receiverOnBase} to ${destinationChain}...`);
-  const tx = await bridge.lock(ERC20_TOKEN_ADDRESS, amount, receiverOnBase, destinationChain);
-  console.log("Tx sent:", tx.hash);
-
-  await tx.wait();
-  console.log("Lock confirmed");
+  try {
+    const tx = await bridge.lock(ERC20_TOKEN_ADDRESS, amount, receiverOnBase, destinationChain);
+    console.log("Tx sent:", tx.hash);
+    await tx.wait();
+    console.log("Lock confirmed");
+  } catch (err: any) {
+    console.error("Lock failed:", err.message || err);
+  }
 }
 
 main().catch(console.error);

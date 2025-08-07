@@ -4,10 +4,10 @@ dotenv.config();
 
 const ETHEREUM_RPC = process.env.SOURCE_RPC_URL!;
 const BASE_RPC = process.env.DESTINATION_RPC_URL!;
-const PRIVATE_KEY = "0x145c4e212eb16f29509a796f79fbd864083f45dd70b55d5a1e31385a668e4054";
+const PRIVATE_KEY = process.env.PRIVATE_KEY!;
 
 const bridgeEthAddress = "0xfFBD6b0ac5e12827122B12B43F233f4490034111";
-const bridgeBaseAddress = "0x175ED96DEF12a16807CA6b9e5b094e08A0dd3a21";
+const bridgeBaseAddress = "0x57330238d1c145E4A1884bE56FA1afdC865B6125";
 
 const bridgeAbi = [
   "event Lock(address indexed from, address indexed to, uint256 amount)",
