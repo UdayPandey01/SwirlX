@@ -1,12 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
-import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
-import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "wormhole-solidity-sdk/interfaces/IWormhole.sol";
+
 
 contract BridgeEth is Ownable {
     mapping(address => bool) public whitelistedTokens;
     mapping(bytes32 => bool) public processedMessages;
+    IWormhole public wormhole;
 
     event Lock(
         address indexed from,
@@ -24,7 +27,9 @@ contract BridgeEth is Ownable {
         bytes32 messageId
     );
 
-    constructor() Ownable(msg.sender) {}
+    constructor(address wormholeAddress) Ownable(msg.sender) {
+        wormhole = IWormhole(wormholeAddress);
+    }
 
     function addTokenToWhitelist(address token) external onlyOwner {
         require(token != address(0), "Invalid token");
@@ -48,6 +53,17 @@ contract BridgeEth is Ownable {
         require(bytes(destinationChain).length > 0, "Destination chain required");
 
         ERC20(token).transferFrom(msg.sender, address(this), amount);
+
+        bytes memory payload = abi.encode(
+            token,          
+            amount,         
+            receiver,       
+            destinationChain 
+        );
+
+        uint32 nonce = uint32(block.timestamp);
+
+        wormhole.publishMessage(nonce, payload, 1);
 
         emit Lock(msg.sender, token, amount, receiver, destinationChain);
     }
