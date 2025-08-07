@@ -5,14 +5,14 @@ import {Script, console} from "forge-std/Script.sol";
 import {BridgeEth} from "../src/BridgeEth.sol";
 
 contract BridgeEthScript is Script {
-    BridgeEth public bridgeEth;
-
-    function setUp() public {}
-
     function run() public {
         vm.startBroadcast();
 
-        bridgeEth = new BridgeEth();
+        address wormholeCore = 0x706abc4E45D419950511e474C7B9Ed348A4a716c;
+
+        BridgeEth bridgeEth = new BridgeEth(wormholeCore);
+
+        console.log("BridgeEth deployed at:", address(bridgeEth));
 
         vm.stopBroadcast();
     }
