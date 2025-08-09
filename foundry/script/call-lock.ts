@@ -2,15 +2,13 @@ import { ethers } from "ethers";
 import * as dotenv from "dotenv";
 dotenv.config();
 
-// ✅ Load environment variables
-const ETHEREUM_RPC = "https://eth-sepolia.g.alchemy.com/v2/PCLr1MFnA4ma6nhEMz3Od";
+const ETHEREUM_RPC = process.env.SOURCE_RPC_URL!;
 const PRIVATE_KEY = process.env.PRIVATE_KEY!;
-const BRIDGE_CONTRACT = "0xfFBD6b0ac5e12827122B12B43F233f4490034111"; // Ethereum Sepolia bridge
-const ERC20_TOKEN_ADDRESS = "0x011053718683C5968AC4B0Ce04589a46A6E244F3"; // 👈 Replace this with your token address
+const BRIDGE_CONTRACT = process.env.BRIDGE_ETH_SEPOLIA!; 
+const ERC20_TOKEN_ADDRESS = process.env.TEST_TOKEN!; 
 
-// ✅ ABI for ERC20 and Bridge contract
 const bridgeAbi = [
-  "function lock(address token, uint256 amount, address receiver, string destinationChain) external"
+  "function lock(address token, uint256 amount, address receiver, string destinationChain) external payable"
 ];
 const erc20Abi = [
   "function approve(address spender, uint256 amount) external returns (bool)",
@@ -19,37 +17,35 @@ const erc20Abi = [
 ];
 
 async function main() {
-  // ✅ Connect wallet
   const provider = new ethers.JsonRpcProvider(ETHEREUM_RPC);
   const wallet = new ethers.Wallet(PRIVATE_KEY, provider);
 
-  // ✅ Connect contracts
   const bridge = new ethers.Contract(BRIDGE_CONTRACT, bridgeAbi, wallet);
   const token = new ethers.Contract(ERC20_TOKEN_ADDRESS, erc20Abi, wallet);
 
-  // ✅ Params
-  const receiverOnBase = "0x048830aA6b8EBbf29C493d1328c0266E74E08891"; // 👈 Replace with actual receiver address
-  const amount = ethers.parseUnits("0.0000001", 18); // Sending 0.1 token (adjust decimals as per token)
+  const receiverOnBase = "0x048830aA6b8EBbf29C493d1328c0266E74E08891"; 
+  const amount = ethers.parseUnits("0.01", 18); 
   const destinationChain = "Base";
-
-  // ✅ Check balance
   const balance = await token.balanceOf(wallet.address);
   if (balance < amount) {
     console.error("Not enough balance");
     return;
   }
 
-  // ✅ Approve if needed
   const allowance = await token.allowance(wallet.address, BRIDGE_CONTRACT);
+  console.log("Allowance:", ethers.formatUnits(allowance, 18));
   if (allowance < amount) {
     console.log(`Approving ${ethers.formatUnits(amount, 18)} tokens...`);
     const approveTx = await token.approve(BRIDGE_CONTRACT, amount);
     await approveTx.wait();
     console.log("Approved");
+    
   }
+  
 
-  // ✅ Call lock
   console.log(`Locking ${ethers.formatUnits(amount, 18)} tokens for ${receiverOnBase} to ${destinationChain}...`);
+  // const wormholeFee = ethers.parseEther("0.001");
+  console.log(ERC20_TOKEN_ADDRESS, amount, receiverOnBase, destinationChain);
   try {
     const tx = await bridge.lock(ERC20_TOKEN_ADDRESS, amount, receiverOnBase, destinationChain);
     console.log("Tx sent:", tx.hash);

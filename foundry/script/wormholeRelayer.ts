@@ -1,3 +1,4 @@
+
 import { ethers } from "ethers";
 import * as dotenv from "dotenv";
 dotenv.config();
@@ -6,54 +7,60 @@ const ETHEREUM_RPC = process.env.SOURCE_RPC_URL!;
 const BASE_RPC = process.env.DESTINATION_RPC_URL!;
 const PRIVATE_KEY = process.env.PRIVATE_KEY!;
 
-const bridgeEthAddress = "0xfFBD6b0ac5e12827122B12B43F233f4490034111";
-const bridgeBaseAddress = "0x57330238d1c145E4A1884bE56FA1afdC865B6125";
+const ethBridgeAddress = process.env.BRIDGE_ETH_SEPOLIA!;
+const factoryAddress = process.env.WRAPPED_TOKEN_FACTORY!;
 
-const bridgeAbi = [
-  "event Lock(address indexed from, address indexed to, uint256 amount)",
-  "function mint(address to, uint256 amount) external",
+const ethBridgeAbi = [
+  "event Lock(address indexed from, address indexed token, uint256 amount, address indexed to, string destinationChain)"
 ];
+const factoryAbi = [
+  "function getWrappedToken(string memory originalSymbol) external view returns (address)"
+];
+const baseTokenAbi = [
+  "function mint(address to, uint256 amount) external"
+];
+
 
 async function main() {
   const ethProvider = new ethers.JsonRpcProvider(ETHEREUM_RPC);
   const baseProvider = new ethers.JsonRpcProvider(BASE_RPC);
-  console.log("PRIVATE_KEY length:", PRIVATE_KEY?.length);
-  console.log("PRIVATE_KEY:", PRIVATE_KEY);
+  const baseWallet = new ethers.Wallet(PRIVATE_KEY, baseProvider);
 
-  const wallet = new ethers.Wallet(PRIVATE_KEY, ethProvider);
+  const ethBridge = new ethers.Contract(ethBridgeAddress, ethBridgeAbi, ethProvider);
+  const factory = new ethers.Contract(factoryAddress, factoryAbi, baseProvider);
 
-  const ethBridge = new ethers.Contract(bridgeEthAddress, bridgeAbi, wallet);
-  const baseBridge = new ethers.Contract(bridgeBaseAddress, bridgeAbi, wallet);
-
-  console.log("Listening for Lock events...");
+  console.log("Listening for Lock events on Ethereum Sepolia...");
 
   ethBridge.on(
     "Lock",
-    async (
-      sender: string,
-      token: string,
-      amount: ethers.BigNumberish,
-      receiver: string,
-      destinationChain: string
-    ) => {
-      console.log(
-        `Lock event: Sender: ${sender}, Token: ${token}, Amount: ${ethers.formatEther(
-          amount
-        )}, Receiver: ${receiver}, DestChain: ${destinationChain}`
-      );
-
+    async (from, token, amount, to, destinationChain) => {
+      console.log(`✅ Lock event detected!`);
+      console.log(`   - Details: ${ethers.formatUnits(amount, 18)} tokens for ${to}`);
+      
       try {
-        const tx = await baseBridge.mint(receiver, amount);
-        console.log(
-          `Minted ${ethers.formatEther(amount)} to ${receiver} tx: ${tx.hash}`
-        );
+        const originalSymbol = "MT";
+        console.log(`   - Asking factory for the address of wrapped '${originalSymbol}'...`);
+        const wrappedTokenAddress = await factory.getWrappedToken(originalSymbol);
+        
+        if (wrappedTokenAddress === ethers.ZeroAddress) {
+          console.error(`   - ❌ Error: Factory doesn't have a wrapped token for '${originalSymbol}'.`);
+          return;
+        }
+        console.log(`   - Factory returned address: ${wrappedTokenAddress}`);
+
+        const wrappedToken = new ethers.Contract(wrappedTokenAddress, baseTokenAbi, baseWallet);
+
+        console.log(`   - Calling mint() on the wrapped token contract...`);
+        const tx = await wrappedToken.mint(to, amount);
+        console.log(`   - Mint transaction sent: ${tx.hash}`);
         await tx.wait();
-        console.log(`Mint confirmed on Base`);
+        console.log(`   - ✅ Mint confirmed on Base!`);
+
       } catch (e) {
-        console.error("Minting failed:", e);
+        console.error("   - ❌ Minting process failed:", e);
       }
     }
   );
 }
 
-main();
+main().catch(console.error);

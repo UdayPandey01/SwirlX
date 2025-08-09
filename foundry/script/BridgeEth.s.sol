@@ -8,7 +8,7 @@ contract BridgeEthScript is Script {
     function run() public {
         vm.startBroadcast();
 
-        address wormholeCore = 0x706abc4E45D419950511e474C7B9Ed348A4a716c;
+        address wormholeCore = 0x4a8bc80Ed5a4067f1CCf107057b8270E0cC11A78;
 
         BridgeEth bridgeEth = new BridgeEth(wormholeCore);
 

@@ -5,7 +5,6 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "wormhole-solidity-sdk/interfaces/IWormhole.sol";
 
-
 contract BridgeEth is Ownable {
     mapping(address => bool) public whitelistedTokens;
     mapping(bytes32 => bool) public processedMessages;
@@ -52,7 +51,8 @@ contract BridgeEth is Ownable {
         require(receiver != address(0), "Receiver address cannot be zero");
         require(bytes(destinationChain).length > 0, "Destination chain required");
 
-        ERC20(token).transferFrom(msg.sender, address(this), amount);
+        bool success = ERC20(token).transferFrom(msg.sender, address(this), amount);
+        require(success, "TransferFrom failed");
 
         bytes memory payload = abi.encode(
             token,          
