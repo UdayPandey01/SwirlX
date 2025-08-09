@@ -34,7 +34,7 @@ async function main() {
   ethBridge.on(
     "Lock",
     async (from, token, amount, to, destinationChain) => {
-      console.log(`✅ Lock event detected!`);
+      console.log(` Lock event detected!`);
       console.log(`   - Details: ${ethers.formatUnits(amount, 18)} tokens for ${to}`);
       
       try {
@@ -43,7 +43,7 @@ async function main() {
         const wrappedTokenAddress = await factory.getWrappedToken(originalSymbol);
         
         if (wrappedTokenAddress === ethers.ZeroAddress) {
-          console.error(`   - ❌ Error: Factory doesn't have a wrapped token for '${originalSymbol}'.`);
+          console.error(`   -  Error: Factory doesn't have a wrapped token for '${originalSymbol}'.`);
           return;
         }
         console.log(`   - Factory returned address: ${wrappedTokenAddress}`);
@@ -54,10 +54,10 @@ async function main() {
         const tx = await wrappedToken.mint(to, amount);
         console.log(`   - Mint transaction sent: ${tx.hash}`);
         await tx.wait();
-        console.log(`   - ✅ Mint confirmed on Base!`);
+        console.log(`   -  Mint confirmed on Base!`);
 
       } catch (e) {
-        console.error("   - ❌ Minting process failed:", e);
+        console.error("   -  Minting process failed:", e);
       }
     }
   );
