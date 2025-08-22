@@ -3,7 +3,7 @@ import * as dotenv from "dotenv";
 dotenv.config();
 
 const ETHEREUM_RPC = "https://eth-sepolia.g.alchemy.com/v2/PCLr1MFnA4ma6nhEMz3Od";
-const PRIVATE_KEY = "0x2933ccb4e9a274b918c12e3917dabd2c94eb591239f6e35555cb43714b6e617d";
+const PRIVATE_KEY = "";
 const BRIDGE_CONTRACT = "0x6D34E425dC7f531B58aA8446b1E2c92DfE9eF965"; 
 const ERC20_TOKEN_ADDRESS = "0xd4696912E308143DbcE647c9c514d63b9b54Effe"; 
 
