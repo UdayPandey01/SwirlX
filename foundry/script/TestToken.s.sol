@@ -10,7 +10,7 @@ contract TestTokenScript is Script {
         // uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         
         // Option 2: Use explicit uint256 casting
-        uint256 deployerPrivateKey = uint256(0x2933ccb4e9a274b918c12e3917dabd2c94eb591239f6e35555cb43714b6e617d);
+        uint256 deployerPrivateKey = uint256();
         
         // Option 3: Alternative hex format
         // uint256 deployerPrivateKey = 0x145c4e212eb16f29509a796f79fbd864083f45dd70b55d5a1e31385a668e4054;
