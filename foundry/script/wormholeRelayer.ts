@@ -4,7 +4,7 @@ dotenv.config();
 
 const ETHEREUM_RPC = "https://eth-sepolia.g.alchemy.com/v2/PCLr1MFnA4ma6nhEMz3Od";
 const BASE_RPC = "https://base-sepolia.g.alchemy.com/v2/9zTE0e9JvP06iTyRecls2";
-const PRIVATE_KEY = "0x2933ccb4e9a274b918c12e3917dabd2c94eb591239f6e35555cb43714b6e617d";
+const PRIVATE_KEY = "";
 
 const ethBridgeAddress = "0x6D34E425dC7f531B58aA8446b1E2c92DfE9eF965";
 const factoryAddress = "0xE98253795Bc234Cd5111b51492a7d0f7502CF65b";
