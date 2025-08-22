@@ -15,7 +15,8 @@ contract BridgeEth is Ownable {
         address indexed token,
         uint256 amount,
         address indexed to,
-        string destinationChain
+        string destinationChain,
+        bytes32 messageId
     );
 
     event Unlock(
@@ -63,9 +64,13 @@ contract BridgeEth is Ownable {
 
         uint32 nonce = uint32(block.timestamp);
 
-        wormhole.publishMessage(nonce, payload, 1);
+        uint64 sequence = wormhole.publishMessage(nonce, payload, 1);
 
-        emit Lock(msg.sender, token, amount, receiver, destinationChain);
+        bytes32 messageId = keccak256(
+            abi.encodePacked(block.chainid, address(this), sequence)
+        );
+
+        emit Lock(msg.sender, token, amount, receiver, destinationChain, messageId);
     }
 
     function unlock(

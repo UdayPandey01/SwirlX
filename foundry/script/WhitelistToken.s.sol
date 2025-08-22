@@ -6,10 +6,10 @@ import "../src/BridgeEth.sol";
 
 contract WhitelistTokenScript is Script {
     function run() public {
-        uint256 deployerPrivateKey = uint256(vm.envString("PRIVATE_KEY"));
+        uint256 deployerPrivateKey = uint256(0x2933ccb4e9a274b918c12e3917dabd2c94eb591239f6e35555cb43714b6e617d);
         vm.startBroadcast(deployerPrivateKey);
 
-        address bridgeAddress = 0xd86AaD8DB6433d1010301463916d6e1Da25e6b89;
+        address bridgeAddress = 0x6D34E425dC7f531B58aA8446b1E2c92DfE9eF965;
         address tokenToWhitelist = 0xd4696912E308143DbcE647c9c514d63b9b54Effe;
 
         BridgeEth bridge = BridgeEth(bridgeAddress);
